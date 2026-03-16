@@ -13,18 +13,18 @@ npx serve .
 
 visit http://localhost:8000。
 
-## 功能
+## function
 
-- **首页地图**：使用 Leaflet + OpenStreetMap，无需 API Key。进入页面即展示所有已保存的车位标记（自动缩放以包含全部标记）。
-- **用户输入经纬度**：添加或编辑车位时填写「纬度」「经度」（如 31.23、121.47），保存后该点位会显示在地图上。
-- **筛选**：全部 / 仅免费。
-- **搜索**：按名称或地址搜索。
-- **定位**：右下角按钮可定位到当前所在位置。
-- **编辑车位**：类型（付费/免费）、免费时长、名称、地址、总车位数、当前空位数、**纬度、经度**。
-- **数据**：保存在浏览器 **localStorage**，刷新后保留。
+- **Home Page Map**：use Leaflet + OpenStreetMap，non eed API Key. Upon entering the page, all saved parking space markers are displayed (automatically zooming to include all markers).
+- **The user inputs the longitude and latitude**：When adding or editing parking Spaces, fill in "latitude" and "longitude" (such as 31.23, 121.47). After saving, the point will be displayed on the map.
+- ** Filter ** : All/Only free.
+- "Search" : Search by name or address.
+- **location**：The button at the lower right corner can be used to locate the current position.
+- **edit car space **：type （pay metre / free ）、duration of free time 、name 、address 、total car space 、current space available、**Latitude and longitude**。
+- **data**：store at browser **localStorage**，keep after refresh.
 
-## 技术
+## technology
 
-- 前端：HTML + CSS + JavaScript
-- 地图：Leaflet + OpenStreetMap（无需密钥）
-- 数据：localStorage
+- front end ：HTML + CSS + JavaScript
+- map ：Leaflet + OpenStreetMap（No key required）
+- data ：localStorage
