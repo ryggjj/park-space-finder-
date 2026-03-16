@@ -1,17 +1,17 @@
 # Parking Space Map - Search and Edit
-View the parking Spaces marked by users on the home page map. ** It does not rely on Google Maps **. Users can simply enter the longitude and latitude by themselves.
+View the parking Spaces marked by users on the home page map. Users can simply enter the longitude and latitude by themselves.
 
-## 运行
+## operation
 
-用浏览器打开 `index.html`，或使用本地静态服务器：
+Open it with a browser `index.html`，Or use a local static server：
 
 ```bash
 python3 -m http.server 8000
-# 或
+# or
 npx serve .
 ```
 
-访问 http://localhost:8000。
+visit http://localhost:8000。
 
 ## 功能
 
