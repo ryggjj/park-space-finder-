@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>车位地图 — 查找与编辑</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-content">
+        <div>
+          <h1 class="logo" data-i18n="appTitle">车位地图</h1>
+          <p class="tagline" data-i18n="appTagline">查找附近车位，可编辑付费/免费与时长</p>
+        </div>
+        <button type="button" class="btn-lang" id="btn-lang" aria-label="切换语言">EN</button>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input type="text" class="input search-input" id="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="搜索地点或地址…" autocomplete="off" />
+      </div>
+      <div class="toolbar-actions">
+        <div class="filters">
+          <button type="button" class="filter active" data-filter="all" data-i18n="filterAll">全部</button>
+          <button type="button" class="filter" data-filter="free" data-i18n="filterFree">仅免费</button>
+        </div>
+        <button type="button" class="btn btn-add" id="btn-add-spot" data-i18n="btnAddSpot">+ 添加车位</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="map-wrap">
+        <div id="map" class="map"></div>
+      </div>
+      <aside class="panel" id="panel">
+        <div class="panel-header">
+          <h2 data-i18n="panelTitle">全部列表</h2>
+          <button type="button" class="btn-close panel-close-btn" id="panel-close" aria-label="收起">×</button>
+        </div>
+        <ul class="spot-list" id="spot-list"></ul>
+      </aside>
+    </div>
+
+    <button type="button" class="btn-locate" id="btn-locate" aria-label="定位到我的位置">📍</button>
+
+    <div class="legend">
+      <span class="legend-item"><i class="dot available"></i> <span data-i18n="legendAvailable">有空位</span></span>
+      <span class="legend-item"><i class="dot occupied"></i> <span data-i18n="legendOccupied">已满</span></span>
+    </div>
+    <button type="button" class="btn-fit-bounds" id="btn-fit-bounds" data-i18n-title="btnFitBoundsTitle" title="缩放至全部标记">⊡</button>
+  </div>
+
+  <!-- 编辑/添加车位 弹窗 -->
+  <div class="modal-overlay" id="edit-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-labelledby="edit-modal-title">
+      <div class="modal-header">
+        <h2 id="edit-modal-title" data-i18n="editTitle">编辑车位</h2>
+        <button type="button" class="btn-close modal-close" id="edit-modal-close" aria-label="关闭">×</button>
+      </div>
+      <form class="modal-form" id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="form-row">
+          <label for="edit-name" data-i18n="labelName">名称</label>
+          <input type="text" id="edit-name" required data-i18n-placeholder="placeholderName" placeholder="如：商场地下停车场" maxlength="80" />
+        </div>
+        <div class="form-row">
+          <label for="edit-address" data-i18n="labelAddress">地址</label>
+          <input type="text" id="edit-address" data-i18n-placeholder="placeholderAddress" placeholder="街道门牌" maxlength="120" />
+        </div>
+        <div class="form-row two-cols">
+          <div>
+            <label for="edit-lat" data-i18n="labelLat">纬度</label>
+            <input type="text" id="edit-lat" data-i18n-placeholder="placeholderLat" placeholder="如 31.23 或 (31.23,121.47)" inputmode="decimal" />
+          </div>
+          <div>
+            <label for="edit-lng" data-i18n="labelLng">经度</label>
+            <input type="text" id="edit-lng" data-i18n-placeholder="placeholderLng" placeholder="如 121.47" inputmode="decimal" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="edit-postal" data-i18n="labelPostal">邮政编码</label>
+          <input type="text" id="edit-postal" data-i18n-placeholder="placeholderPostal" placeholder="如 200000" maxlength="20" />
+        </div>
+        <div class="form-row">
+          <label data-i18n="labelType">类型</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="edit-type" value="free" /> <span data-i18n="typeFree">免费</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="edit-type" value="paid" /> <span data-i18n="typePaid">付费</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-row free-duration-row" id="free-duration-row">
+          <label for="edit-free-minutes" data-i18n="labelFreeDuration">免费时长</label>
+          <select id="edit-free-minutes">
+            <option value="0" data-i18n="durationAllDay">全天免费</option>
+            <option value="15" data-i18n="duration15">15 分钟</option>
+            <option value="30" data-i18n="duration30">30 分钟</option>
+            <option value="60" data-i18n="duration60">1 小时</option>
+            <option value="120" data-i18n="duration120">2 小时</option>
+            <option value="180" data-i18n="duration180">3 小时</option>
+          </select>
+        </div>
+        <div class="form-row two-cols">
+          <div>
+            <label for="edit-total" data-i18n="labelTotal">总车位数</label>
+            <input type="number" id="edit-total" min="1" max="9999" value="50" />
+          </div>
+          <div>
+            <label for="edit-available" data-i18n="labelAvailable">当前空位</label>
+            <input type="number" id="edit-available" min="0" max="9999" value="10" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" id="edit-cancel" data-i18n="btnCancel">取消</button>
+          <button type="submit" class="btn btn-primary" data-i18n="btnSave">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
+
