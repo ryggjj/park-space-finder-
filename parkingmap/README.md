@@ -1,6 +1,5 @@
-# 车位地图 — 查找与编辑
-
-在首页地图上查看用户标记的车位，**不依赖 Google 地图**，用户自行输入经纬度即可。
+# Parking Space Map - Search and Edit
+View the parking Spaces marked by users on the home page map. ** It does not rely on Google Maps **. Users can simply enter the longitude and latitude by themselves.
 
 ## 运行
 
