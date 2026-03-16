@@ -1,4 +1,4 @@
-# park-space-finder-
+# park-space-finder
 
 # Parking Space Map - Search and Edit
 View the parking Spaces marked by users on the home page map. Users can simply enter the longitude and latitude by themselves.
